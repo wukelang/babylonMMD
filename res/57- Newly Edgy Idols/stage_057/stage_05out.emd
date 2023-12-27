@@ -1,0 +1,10 @@
+[Info]
+Version = 3
+
+[Effect]
+Obj = none
+Obj[1] = Tex\BG_N_01.fx
+Obj[2] = Tex\BG_N_01.fx
+Obj[3] = Tex\BG_N_01.fx
+Obj[4] = Tex\BG_N_01.fx
+
