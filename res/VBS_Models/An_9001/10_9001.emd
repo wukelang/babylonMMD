@@ -1,0 +1,8 @@
+[Info]
+Version = 3
+
+[Effect]
+Obj = Material_An.fx
+Obj.show = true
+Obj[2] = eye_hl.fx
+

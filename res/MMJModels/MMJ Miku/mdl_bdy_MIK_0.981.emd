@@ -1,0 +1,9 @@
+[Info]
+Version = 3
+
+[Effect]
+Obj = none
+Obj[0] = Tex\body.fx
+Obj[1] = Tex\body.fx
+Obj[2] = Tex\face.fx
+

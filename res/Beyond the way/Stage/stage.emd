@@ -1,0 +1,18 @@
+[Info]
+Version = 3
+
+[Effect]
+Obj = none
+Obj[2] = Texture2D\BG_N_01.fx
+Obj[3] = Texture2D\BG_N_01.fx
+Obj[4] = Texture2D\BG_N_01.fx
+Obj[5] = none
+Obj[6] = none
+Obj[8] = none
+Obj[9] = none
+Obj[11] = Texture2D\movie.fx
+Obj[11].show = true
+Obj[12] = none
+Obj[14].show = false
+Obj[15].show = false
+

@@ -1,0 +1,8 @@
+[Info]
+Version = 3
+
+[Effect]
+Obj = Material_Miku.fx
+Obj.show = true
+Obj[3] = eye_hl.fx
+
