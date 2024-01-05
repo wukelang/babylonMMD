@@ -22,7 +22,10 @@ export class SceneBuilder implements ISceneBuilder {
 
         const scene = new Scene(engine);
 
-        const mmdCamera = new MmdCamera("mmdCamera", new Vector3(0, 10, -50), scene);
+        const mmdCamera = new MmdCamera("mmdCamera", new Vector3(0, 10, 0), scene);
+        mmdCamera.maxZ = 300;
+        mmdCamera.minZ = 1;
+        // mmdCamera.parent = mmdRoot;
 
 
         const hemisphericLight = new HemisphericLight("HemisphericLight", new Vector3(0, 1, 0), scene);
@@ -35,33 +38,57 @@ export class SceneBuilder implements ISceneBuilder {
         directionalLight.shadowMaxZ = 20;
         directionalLight.shadowMinZ = -15;
 
-        const shadowGenerator = new ShadowGenerator(2048, directionalLight, true, mmdCamera);
-        shadowGenerator.bias = 0.01;
+        const shadowGenerator = new ShadowGenerator(1024, directionalLight, true);
+        // shadowGenerator.usePercentageCloserFiltering = true;
+        // shadowGenerator.forceBackFacesOnly = true;
+        // shadowGenerator.filteringQuality = ShadowGenerator.QUALITY_MEDIUM;
+        // shadowGenerator.frustumEdgeFalloff = 0.1;
 
-        const ground = MeshBuilder.CreateGround("ground1", { width: 60, height: 60, subdivisions: 2, updatable: false }, scene);
+        const ground = MeshBuilder.CreateGround("ground1", { width: 1000, height: 1000, subdivisions: 2, updatable: false }, scene);
         ground.receiveShadows = true;
         shadowGenerator.addShadowCaster(ground);
 
-        const mmdMesh = await SceneLoader.ImportMeshAsync("", "res/MMJModels/MMJ Miku/", "IK Bones Set.pmx", scene)
-        // .then((result) => result.meshes[0]);
-        // const mmdMesh = await SceneLoader.ImportMeshAsync("", "res/VBS_Models/Miku_9001/", "29_9001.pmx", scene)
-        // const mmdMesh = await SceneLoader.ImportMeshAsync("", "res/VBS_Models/", "VBSMiku3.bpmx", scene)
-        // const mmdMesh = await SceneLoader.ImportMeshAsync("", "res/VBS_Models/", "test.bpmx", scene)
+        const stageMesh = await SceneLoader.ImportMeshAsync("", "res/57- Newly Edgy Idols/stage_057/", "stage_05out.pmx", scene)
             .then((result) => result.meshes[0] as Mesh);
-        mmdMesh.receiveShadows = true;
-        // mmdMesh.overlayAlpha = 0;
-        shadowGenerator.addShadowCaster(mmdMesh);
+        // stageMesh.receiveShadows = true;
+        // shadowGenerator.addShadowCaster(stageMesh);
+
+        const mikuMesh = await SceneLoader.ImportMeshAsync("", "res/MMJModels/MMJ Miku/", "SEKAI Bones Set.pmx", scene)
+            .then((result) => result.meshes[0] as Mesh);
+        mikuMesh.receiveShadows = true;
+        shadowGenerator.addShadowCaster(mikuMesh);
+
+        const minoriMesh = await SceneLoader.ImportMeshAsync("", "res/MMJModels/Hanasato Minori/", "SEKAI Bones Set.pmx", scene)
+            .then((result) => result.meshes[0] as Mesh);
+        minoriMesh.receiveShadows = true;
+        shadowGenerator.addShadowCaster(minoriMesh);
+
+        const shizukuMesh = await SceneLoader.ImportMeshAsync("", "res/MMJModels/Hinomori Shizuku/", "SEKAI Bones Set.pmx", scene)
+            .then((result) => result.meshes[0] as Mesh);
+        shizukuMesh.receiveShadows = true;
+        shadowGenerator.addShadowCaster(shizukuMesh);
+
+        const harukaMesh = await SceneLoader.ImportMeshAsync("", "res/MMJModels/Kiritani Haruka/", "SEKAI Bones Set.pmx", scene)
+            .then((result) => result.meshes[0] as Mesh);
+        harukaMesh.receiveShadows = true;
+        shadowGenerator.addShadowCaster(harukaMesh);
+
+        const airiMesh = await SceneLoader.ImportMeshAsync("", "res/MMJModels/Momoi Airi/", "SEKAI Bones Set.pmx", scene)
+            .then((result) => result.meshes[0] as Mesh);
+        airiMesh.receiveShadows = true;
+        shadowGenerator.addShadowCaster(airiMesh);
 
         const vmdLoader = new VmdLoader(scene);
-        const motion = await vmdLoader.loadAsync("miku_motion", [
-            // "res/Beyond the way/Motion_Miku.vmd"
-            "res/57- Newly Edgy Idols/Mot_Miku.vmd"
-        ]);
+        const mikuMotion = await vmdLoader.loadAsync("dance", ["res/57- Newly Edgy Idols/Mot_Miku.vmd"]);
+        const minoriMotion = await vmdLoader.loadAsync("dance", ["res/57- Newly Edgy Idols/Mot_Minori.vmd"]);
+        const shizukuMotion = await vmdLoader.loadAsync("dance", ["res/57- Newly Edgy Idols/Mot_Shizuku.vmd"]);
+        const harukaMotion = await vmdLoader.loadAsync("dance", ["res/57- Newly Edgy Idols/Mot_Haruka.vmd"]);
+        const airiMotion = await vmdLoader.loadAsync("dance", ["res/57- Newly Edgy Idols/Mot_Airi.vmd"]);
 
-        // const mmdCameraMotion = await vmdLoader.loadAsync("camera_motion", [
-        //     "res/Beyond the way/Camera.vmd"
-        //     // "res/Beyond the Way - Motion/Camera/main_camera_0398.vmd"
-        // ]);
+        const mmdCameraMotion = await vmdLoader.loadAsync("camera_motion", [
+            "res/57- Newly Edgy Idols/MainCamera.vmd"
+            // "res/57- Newly Edgy Idols/Song_057_Cam.vmd"
+        ]);
 
         const havokInstance = await havokPhysics();
         const havokPlugin = new HavokPlugin(true, havokInstance);
@@ -71,12 +98,30 @@ export class SceneBuilder implements ISceneBuilder {
         mmdRuntime.register(scene);
 
         mmdRuntime.setCamera(mmdCamera);
-        // mmdCamera.addAnimation(mmdCameraMotion);
-        // mmdCamera.setAnimation("camera_motion");
+        mmdCamera.addAnimation(mmdCameraMotion);
+        mmdCamera.setAnimation("camera_motion");
 
-        const mmdModel = mmdRuntime.createMmdModel(mmdMesh);
-        mmdModel.addAnimation(motion);
-        mmdModel.setAnimation("miku_motion");
+        mmdRuntime.createMmdModel(stageMesh);
+
+        const mikuModel = mmdRuntime.createMmdModel(mikuMesh);
+        mikuModel.addAnimation(mikuMotion);
+        mikuModel.setAnimation("dance");
+
+        const minoriModel = mmdRuntime.createMmdModel(minoriMesh);
+        minoriModel.addAnimation(minoriMotion);
+        minoriModel.setAnimation("dance");
+
+        const shizukuModel = mmdRuntime.createMmdModel(shizukuMesh);
+        shizukuModel.addAnimation(shizukuMotion);
+        shizukuModel.setAnimation("dance");
+
+        const harukaModel = mmdRuntime.createMmdModel(harukaMesh);
+        harukaModel.addAnimation(harukaMotion);
+        harukaModel.setAnimation("dance");
+
+        const airiModel = mmdRuntime.createMmdModel(airiMesh);
+        airiModel.addAnimation(airiMotion);
+        airiModel.setAnimation("dance");
 
         mmdRuntime.playAnimation();
 
