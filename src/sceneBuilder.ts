@@ -6,8 +6,7 @@ import type { Engine, Mesh} from "@babylonjs/core";
 import { DirectionalLight, HavokPlugin, HemisphericLight, MeshBuilder, Scene, SceneLoader, ShadowGenerator, Vector3 } from "@babylonjs/core";
 // import { HavokPlugin, HemisphericLight, MeshBuilder, Scene, SceneLoader, Vector3 } from "@babylonjs/core";
 import havokPhysics from "@babylonjs/havok";
-import { MmdCamera, MmdPhysics, MmdRuntime, VmdLoader } from "babylon-mmd";
-// import type { MmdStandardMaterialBuilder } from "babylon-mmd/esm/Loader/mmdStandardMaterialBuilder";
+import { MmdCamera, MmdPhysics, MmdPlayerControl, MmdRuntime, StreamAudioPlayer, VmdLoader } from "babylon-mmd";
 import type { BpmxLoader } from "babylon-mmd/esm/Loader/Optimized/bpmxLoader";
 
 import type { ISceneBuilder } from "./baseRuntime";
@@ -22,9 +21,9 @@ export class SceneBuilder implements ISceneBuilder {
 
         const scene = new Scene(engine);
 
-        const mmdCamera = new MmdCamera("mmdCamera", new Vector3(0, 10, 0), scene);
-        mmdCamera.maxZ = 300;
-        mmdCamera.minZ = 1;
+        const mmdCamera = new MmdCamera("mmdCamera", new Vector3(0, 10, -100), scene);
+        // mmdCamera.maxZ = 300;
+        // mmdCamera.minZ = 1;
         // mmdCamera.parent = mmdRoot;
 
 
@@ -38,13 +37,13 @@ export class SceneBuilder implements ISceneBuilder {
         directionalLight.shadowMaxZ = 20;
         directionalLight.shadowMinZ = -15;
 
-        const shadowGenerator = new ShadowGenerator(1024, directionalLight, true);
+        const shadowGenerator = new ShadowGenerator(2048, directionalLight, true);
         // shadowGenerator.usePercentageCloserFiltering = true;
         // shadowGenerator.forceBackFacesOnly = true;
         // shadowGenerator.filteringQuality = ShadowGenerator.QUALITY_MEDIUM;
         // shadowGenerator.frustumEdgeFalloff = 0.1;
 
-        const ground = MeshBuilder.CreateGround("ground1", { width: 1000, height: 1000, subdivisions: 2, updatable: false }, scene);
+        const ground = MeshBuilder.CreateGround("ground1", { width: 1000, height: 1000, subdivisions: 10, updatable: false }, scene);
         ground.receiveShadows = true;
         shadowGenerator.addShadowCaster(ground);
 
@@ -92,10 +91,17 @@ export class SceneBuilder implements ISceneBuilder {
 
         const havokInstance = await havokPhysics();
         const havokPlugin = new HavokPlugin(true, havokInstance);
-        scene.enablePhysics(new Vector3(0, -9.81, 0), havokPlugin);
+        // scene.enablePhysics(new Vector3(0, -9.81, 0), havokPlugin);
+        scene.enablePhysics(new Vector3(0, -16, 0), havokPlugin);
 
         const mmdRuntime = new MmdRuntime(new MmdPhysics(scene));
         mmdRuntime.register(scene);
+
+        const audioPlayer = new StreamAudioPlayer(scene);
+        audioPlayer.source = "res/57- Newly Edgy Idols/Song_057.wav";
+        mmdRuntime.setAudioPlayer(audioPlayer);
+        const mmdPlayerControl = new MmdPlayerControl(scene, mmdRuntime, audioPlayer);
+        mmdPlayerControl.showPlayerControl();
 
         mmdRuntime.setCamera(mmdCamera);
         mmdCamera.addAnimation(mmdCameraMotion);
